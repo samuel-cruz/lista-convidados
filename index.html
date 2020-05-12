@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Lista de convidados</title>
+
+    <link
+      rel="stylesheet"
+      href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
+      integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm"
+      crossorigin="anonymous"
+    />
+  </head>
+  <body>
+    <div id="app" class="container">
+      <div class="alert alert-primary" role="alert">
+        <h1>Lista de convidados</h1>
+      </div>
+
+      <div class="form-group">
+        <div class="input-group mb-3">
+          <input
+            id="campo"
+            type="text"
+            class="form-control"
+            placeholder="Informe o nome do convidado"
+          />
+          <div class="input-group-append">
+            <button
+              id="btnCadastrar"
+              class="btn btn-outline-primary"
+              type="button"
+            >
+              Cadastrar
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <table class="table">
+        <thead>
+          <tr>
+            <th scope="col">#</th>
+            <th scope="col">Nome</th>
+            <th scope="col">Ações</th>
+          </tr>
+        </thead>
+        <tbody id="body"></tbody>
+      </table>
+
+      <ul id="lista"></ul>
+    </div>
+    <script type="text/javascript">
+      var elLista = document.getElementById("body");
+      var elCampo = document.getElementById("campo");
+      var elBtnCadastrar = document.getElementById("btnCadastrar");
+
+      var convidados = JSON.parse(localStorage.getItem("convidados")) || [];
+
+      function gerarNumeroDeId() {
+        return Math.floor(Math.random() * 1000);
+      }
+
+      function incluirNovaColuna(root, valor, tipo, evento) {
+        var elColuna = document.createElement("td");
+
+        if (!tipo || tipo == "text") {
+          elColuna.appendChild(document.createTextNode(valor));
+          root.appendChild(elColuna);
+        } else {
+          if (tipo == "button") {
+            var button = document.createElement("button");
+            button.setAttribute("class", "btn btn-danger");
+            button.appendChild(document.createTextNode(valor));
+            button.onclick = evento;
+            root.appendChild(button);
+          }
+        }
+
+        return root;
+      }
+
+      function removerConvidado(convidado) {
+        if (
+          confirm(
+            `Realmente deseja excluir o convidado \n "${convidado.nome}?"`
+          )
+        )
+          convidados.splice(convidados.indexOf(convidado), 1);
+
+        salvarConvidadosNoLocalStorage();
+      }
+
+      function salvarConvidadosNoLocalStorage() {
+        localStorage.setItem("convidados", JSON.stringify(convidados));
+      }
+
+      function listarConvidados() {
+        elLista.innerHTML = "";
+
+        for (const convidado of convidados) {
+          var root = document.createElement("tr");
+
+          elLista.appendChild(
+            incluirNovaColuna(
+              root,
+              convidado.id ? convidado.id : convidados.indexOf(convidado) + 1
+            )
+          );
+          elLista.appendChild(incluirNovaColuna(root, convidado.nome));
+
+          var elBtnExcluir = incluirNovaColuna(
+            root,
+            "Excluir",
+            "button",
+            function () {
+              removerConvidado(convidado);
+              listarConvidados();
+            }
+          );
+
+          elLista.appendChild(elBtnExcluir);
+        }
+      }
+
+      listarConvidados();
+
+      elBtnCadastrar.onclick = function () {
+        if (elCampo.value.trim() == "") {
+          alert("Informe o nome do convidado!");
+          return;
+        }
+
+        convidados.push({
+          id: gerarNumeroDeId(),
+          nome: elCampo.value,
+        });
+
+        salvarConvidadosNoLocalStorage();
+
+        listarConvidados();
+
+        elCampo.value = "";
+      };
+    </script>
+
+    <script
+      src="https://code.jquery.com/jquery-3.2.1.slim.min.js"
+      integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN"
+      crossorigin="anonymous"
+    ></script>
+    <script
+      src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"
+      integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q"
+      crossorigin="anonymous"
+    ></script>
+    <script
+      src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"
+      integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl"
+      crossorigin="anonymous"
+    ></script>
+  </body>
+</html>
