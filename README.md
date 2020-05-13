@@ -7,6 +7,10 @@
 
 Projeto de estudo sobre JavaScript, módulo de manipulação de objetos no DOM.
 
+<h1 align="center">
+    <img alt="ListaConvidados" title="App lista de convidados" src=".github/app.png" width="1036px" />
+</h1>
+
 ## :rocket: Tecnologias
 
 Este projeto foi desenvolvido com as seguintes tecnologias:
